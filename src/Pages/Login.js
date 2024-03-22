@@ -1,10 +1,15 @@
-import React from 'react';
-import { Box, Paper, Button, Stack, Typography, Link, TextField } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Paper, Button, Stack, Typography, Link, TextField, CircularProgress } from '@mui/material';
 import { useFormik } from 'formik';
 import login from '../Assets/login.png';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 const Login = () => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -14,10 +19,21 @@ const Login = () => {
       email: Yup.string().email('Invalid email address').required('Email is required'),
       password: Yup.string().required('Password is required')
     }),
-    onSubmit:  (values) => {
-        console.log(values)
-        // Add your password reset logic here, such as sending a request to your backend
-      } 
+    onSubmit: async (values) => {
+      setSubmitting(true);
+      try {
+        // Send login request to backend using Axios
+        const response = await axios.post('https://your-api-url/login', values);
+        console.log(response.data); // Assuming your backend returns data upon successful login
+        setSubmitSuccess(true);
+        setSubmitError('');
+      } catch (error) {
+        setSubmitting(false);
+        console.error('Error during login:', error.response.data);
+        setSubmitSuccess(false);
+        setSubmitError(error.response.data.message || 'An error occurred during login.');
+      }
+    }
   });
 
   return (
@@ -26,7 +42,6 @@ const Login = () => {
         backgroundColor: '#FAFAFF',
         width: '100%',
         height: '100%',
-        zIndex: -1,
         position: 'absolute',
         top: 0,
         left: 0
@@ -64,6 +79,7 @@ const Login = () => {
                   value={formik.values.email}
                   error={formik.touched.email && Boolean(formik.errors.email)}
                   helperText={formik.touched.email && formik.errors.email}
+                  disabled={submitting || submitSuccess}
                 />
               </Stack>
               <Stack mb={3}>
@@ -77,18 +93,29 @@ const Login = () => {
                   value={formik.values.password}
                   error={formik.touched.password && Boolean(formik.errors.password)}
                   helperText={formik.touched.password && formik.errors.password}
+                  disabled={submitting || submitSuccess}
                 />
               </Stack>
               <Stack mb={5}>
                 <Link href="/Forgetpassword" mb={4} sx={{ fontFamily: 'Poppins', fontWeight: 'Light' }}>
                   Forgot password?
                 </Link>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  sx={{ width: '50%', marginLeft: '150px', fontFamily: 'Poppins', fontWeight: 'bold' }}>
-                  Log in
-                </Button>
+                {submitError && (
+                  <Typography variant="body2" color="error" mb={2}>
+                    {submitError}
+                  </Typography>
+                )}
+                {submitting && <CircularProgress size={24} sx={{ color: 'primary.main' }} />}
+                {!submitSuccess && !submitting && (
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    disabled={submitting}
+                    sx={{ width: '50%', marginLeft: '150px', fontFamily: 'Poppins', fontWeight: 'bold' }}
+                  >
+                    Log in
+                  </Button>
+                )}
               </Stack>
             </form>
           </Stack>

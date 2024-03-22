@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import forgotpassword from '../Assets/forgotpassword.png';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 const initialValues = {
   email: ''
@@ -16,9 +17,16 @@ const validationSchema = Yup.object({
 const Forgetpassword = () => {
   const formik = useFormik({
     initialValues,
-    onSubmit: (values) => {
-      console.log(values);
-      // Add your password reset logic here, such as sending a request to your backend
+    onSubmit: async (values) => {
+      try {
+        // Send password reset request to backend using Axios
+        const response = await axios.post('https://your-api-url/reset-password-email', values);
+        console.log(response.data); // Assuming your backend returns data upon successful password reset email sent
+        // Add logic for showing success message to the user
+      } catch (error) {
+        console.error('Error sending reset password email:', error.response.data);
+        // Add logic for showing error message to the user
+      }
     },
     validationSchema
   });
@@ -38,7 +46,7 @@ const Forgetpassword = () => {
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <Paper elevation={5}>
           <Stack direction="row">
-            <Box sx={{ display: {lg: 'block', xs: 'none'}}}>
+            <Box sx={{ display: { lg: 'block', xs: 'none' } }}>
               <img src={forgotpassword} alt="forgot password" style={{ height: '500px' }} />
             </Box>
             <form onSubmit={formik.handleSubmit} style={{ marginLeft: '50px', marginRight: '50px' }}>
@@ -89,3 +97,4 @@ const Forgetpassword = () => {
 };
 
 export default Forgetpassword;
+
