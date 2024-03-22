@@ -1,9 +1,8 @@
-import {Routes,BrowserRouter,Route} from 'react-router-dom'
+import { Routes, BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
 import Login from './Pages/Login';
 import Forgetpassword from './Pages/Forgetpassword';
 import Home from './Pages/Home';
-import ResetPassword from './Pages/ResetPassword';
 import PasswordReset from './Pages/PasswordReset';
 
 function App() {
@@ -11,11 +10,10 @@ function App() {
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path='/PasswrdReset' element={<PasswordReset/>}/>
-          <Route path='/ResetPassword' element={<ResetPassword/>}/>
+          <Route path='/api/auth/login' element={<Login />} />
+          <Route path='/api/auth/password/reset' element={<Forgetpassword />} />
+          <Route path='/api/auth/password/reset/confirm/:token' element={<PasswordReset />} />
           <Route path='/' element={<Home />} />
-          <Route path='/Login' element={<Login/>} />
-          <Route path='/Forgetpassword' element={<Forgetpassword />} />
         </Routes>
       </BrowserRouter>
     </div>
